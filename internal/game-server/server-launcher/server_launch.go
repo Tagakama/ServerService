@@ -2,54 +2,49 @@ package server_launcher
 
 import (
 	"fmt"
+	"github.com/Tagakama/ServerManager/internal/config"
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"net"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 )
 
-func launchGameServer(settings _type.RoomSettings, connection []*_type.PendingConnection) {
+type ServerLauncher struct {
+	versionPath string
+	execName    string
+}
+
+func New(cfg *config.Config) *ServerLauncher {
+	return &ServerLauncher{
+		versionPath: cfg.VersionPath,
+		execName:    cfg.ExecutableName,
+	}
+}
+
+func (s *ServerLauncher) launchGameServer(settings _type.RoomSettings, connection []*_type.PendingConnection) {
 	port, err := FindFreePort()
 	if err != nil {
 		fmt.Sprintf("Failed to find free port: %v", err)
 	}
-	exePath, err := os.Executable()
-	if err != nil {
-		fmt.Println("Error getting executable path:", err)
-		return
-	}
 
 	logFilePath := fmt.Sprintf("Logs/Room_%d.log", settings.ID)
-
-	servisePath := fmt.Sprintf("%s/%s", filepath.Dir(exePath))
-	cmd := exec.Command(cfg.LocalStorage.Directory+server.AppVersion+cfg.LocalStorage.Name,
-		"-nographics", "-dedicatedServer", "-batchmode", "-fps", "60", "-dfill", "-UserID", string(server.IP+strconv.Itoa(server.Port)), "-sessionName", string(server.IP+strconv.Itoa(server.Port)), "-logFile", logFilePath,
+	unicName := fmt.Sprintf("%s%s%d", settings.AppVersion, settings.CurrentMap, settings.ID)
+	cmd := exec.Command(s.versionPath+settings.AppVersion+s.execName,
+		"-nographics", "-dedicatedServer", "-batchmode", "-fps", "60", "-dfill", "-UserID", unicName,
+		"-sessionName", string(settings.AppVersion+strconv.Itoa(settings.ID)), "-logFile", logFilePath,
 		"-port", strconv.Itoa(port), "-region eu",
-		"-serverName", server.IP, "-scene", server.MapName)
+		"-serverName", unicName, "-scene", settings.CurrentMap)
 
-	err := cmd.Start()
+	err = cmd.Start()
 	if err != nil {
-		guiUpdate.AddLogMessage(fmt.Sprintf("Failed to start server %d: %v\n", server.ID, err))
+		fmt.Sprintf("Failed to start server %d: %v\n", settings.ID, err)
 		return
 	}
-
-	ServersMutex.Lock()
-	for i, s := range Servers {
-		if s.ID == server.ID {
-			Servers[i].PID = cmd.Process.Pid
-			guiUpdate.AddLogMessage(fmt.Sprintf("PID: %d Game server %d started on port %d. App server version %s .Map settings - %s .\n", Servers[i].PID, Servers[i].ID, Servers[i].Port, Servers[i].AppVersion, Servers[i].MapName))
-			guiUpdate.RefreshServerList()
-			break
-		}
-	}
-	ServersMutex.Unlock()
 
 	go func() {
 		err := cmd.Wait()
 		if err != nil {
-			fmt.Printf("Server %d stopped with error: %v\n", server.ID, err)
+			fmt.Printf("Server %d stopped with error: %v\n", settings.ID, err)
 		}
 	}()
 }
