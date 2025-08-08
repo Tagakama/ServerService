@@ -1,0 +1,8 @@
+env: "dev"
+storage_path: # путь для хранения бд
+tcp_server:
+  addres: "0.0.0.0"
+  port: "8080"
+  timeout: 4
+  idle_timeout: 30
+  worker_count: 4

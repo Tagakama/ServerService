@@ -1,0 +1,16 @@
+package startManager
+
+import (
+	"fmt"
+	"github.com/Tagakama/ServerManager/internal/config"
+	"net"
+)
+
+func CreateServerManager(config *config.Config) (net.Listener, error) {
+	server, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.Addres, config.Port))
+	if err != nil {
+		fmt.Sprintf("Server not listen %v", err)
+	}
+
+	return server, err
+}

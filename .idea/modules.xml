@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../CentralProcessor/.idea/CentralProcessor.iml" filepath="$PROJECT_DIR$/../CentralProcessor/.idea/CentralProcessor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Protos/Protos_SM/.idea/Protos_SM.iml" filepath="$PROJECT_DIR$/../Protos/Protos_SM/.idea/Protos_SM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ServerManager.iml" filepath="$PROJECT_DIR$/.idea/ServerManager.iml" />
+    </modules>
+  </component>
+</project>
