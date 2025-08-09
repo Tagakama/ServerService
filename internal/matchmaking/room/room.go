@@ -69,15 +69,6 @@ func (room *Room) AddPlayer(player *_type.PendingConnection) {
 	room.Players = append(room.Players, player)
 	room.ReservedPlayers += player.ConnectedMessage.NumberOfPlayers
 
-	//Проверка все ли клиенты попадают в комнаты и нет ли дубликатов
-	//fmt.Printf("✅ Added %s (%d players) to room %d [total: %d/%d]\n",
-	//	player.ConnectedMessage.ClientID,
-	//	player.ConnectedMessage.NumberOfPlayers,
-	//	room.ID,
-	//	room.ReservedPlayers,
-	//	room.MaxPlayers,
-	//)
-
 	if room.ReservedPlayers == room.MaxPlayers {
 		room.Closed = true
 	}

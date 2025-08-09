@@ -3,24 +3,26 @@ package workers
 import (
 	"errors"
 	"fmt"
+	"github.com/Tagakama/ServerManager/internal/matchmaking/matchmaker"
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"sync"
 )
 
 type TaskSubmitter interface {
-	AddTask(task _type.PendingConnection)
+	AddTask(task *_type.PendingConnection)
 }
 
 type Task struct {
 	ID      int
-	Request _type.PendingConnection
+	Request *_type.PendingConnection
 }
 
 type WorkerPool struct {
-	isClosed bool
-	tasks    chan Task
-	results  chan Result
-	mu       sync.Mutex
+	isClosed   bool
+	tasks      chan Task
+	results    chan Result
+	mu         sync.Mutex
+	matchMaker *matchmaker.Matchmaker
 }
 
 type Result struct {
@@ -31,16 +33,17 @@ type Result struct {
 
 var TaskCount int = 1
 
-func NewWorkerPool(numWorkers int) *WorkerPool {
+func NewWorkerPool(numWorkers int, m *matchmaker.Matchmaker) *WorkerPool {
 	if numWorkers <= 0 {
 		//return nil, errors.New("Invalid number of workers")
 	}
 
 	pool := &WorkerPool{
-		isClosed: false,
-		tasks:    make(chan Task, 100),
-		results:  make(chan Result, 100),
-		mu:       sync.Mutex{},
+		isClosed:   false,
+		tasks:      make(chan Task, 100),
+		results:    make(chan Result, 100),
+		mu:         sync.Mutex{},
+		matchMaker: m,
 	}
 
 	go pool.Proccess(numWorkers)
@@ -56,6 +59,9 @@ func (wp *WorkerPool) Proccess(numWorkers int) {
 		go func() {
 			defer wg.Done()
 			for task := range wp.tasks {
+
+				wp.matchMaker.InviteInRoom(task.Request)
+
 				wp.results <- Result{
 					TaskID: task.ID,
 					Output: fmt.Sprintf("handled %d", task.ID),
@@ -79,7 +85,7 @@ func (wp *WorkerPool) Proccess(numWorkers int) {
 	//close(wp.results)
 }
 
-func (wp *WorkerPool) AddTask(task _type.PendingConnection) {
+func (wp *WorkerPool) AddTask(task *_type.PendingConnection) {
 	wp.mu.Lock()
 	defer wp.mu.Unlock()
 	if wp.isClosed {

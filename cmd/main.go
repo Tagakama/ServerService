@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/Tagakama/ServerManager/internal/config"
+	server_launcher "github.com/Tagakama/ServerManager/internal/game-server/server-launcher"
+	"github.com/Tagakama/ServerManager/internal/matchmaking/matchmaker"
 	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handleConnection"
 	"github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/startManager"
 	"github.com/Tagakama/ServerManager/internal/tcp-server/workers"
@@ -10,7 +12,10 @@ import (
 
 func main() {
 	cfg := config.MustLoad()
-	workerPool := workers.NewWorkerPool(cfg.WorkerCount)
+	sl := server_launcher.New(cfg)
+	mm := matchmaker.NewMatchmaker(sl)
+
+	workerPool := workers.NewWorkerPool(cfg.WorkerCount, mm)
 
 	serverManagerListener, err := startManager.CreateServerManager(cfg)
 	if err != nil {

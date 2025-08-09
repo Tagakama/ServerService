@@ -3,7 +3,7 @@ package server_launcher
 import (
 	"fmt"
 	"github.com/Tagakama/ServerManager/internal/config"
-	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
+	"github.com/Tagakama/ServerManager/internal/matchmaking/room"
 	"net"
 	"os/exec"
 	"strconv"
@@ -21,7 +21,7 @@ func New(cfg *config.Config) *ServerLauncher {
 	}
 }
 
-func (s *ServerLauncher) launchGameServer(settings _type.RoomSettings, connection []*_type.PendingConnection) {
+func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
 	port, err := FindFreePort()
 	if err != nil {
 		fmt.Sprintf("Failed to find free port: %v", err)

@@ -3,6 +3,7 @@ package matchmaker
 import (
 	"errors"
 	"fmt"
+	server_launcher "github.com/Tagakama/ServerManager/internal/game-server/server-launcher"
 	r "github.com/Tagakama/ServerManager/internal/matchmaking/room"
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"sync"
@@ -16,14 +17,16 @@ type RoomCloser interface {
 type Matchmaker struct {
 	CurrentRooms []*r.Room
 	mu           sync.Mutex
+	launcher     *server_launcher.ServerLauncher
 }
 
 var roomsCount = 1
 
-func NewMatchmaker() *Matchmaker {
+func NewMatchmaker(launcher *server_launcher.ServerLauncher) *Matchmaker {
 	return &Matchmaker{
 		CurrentRooms: make([]*r.Room, 0),
 		mu:           sync.Mutex{},
+		launcher:     launcher,
 	}
 }
 
@@ -40,7 +43,7 @@ func (m *Matchmaker) AddNewRoom(connection *_type.PendingConnection) error {
 	}
 
 	newRoom.OnComplete = func(r *r.Room) {
-		m.removeClosedRoomLocked()
+		m.RoomCopmlete(r)
 	}
 
 	//m.mu.Lock()
@@ -109,4 +112,11 @@ func (m *Matchmaker) addAndAssign(connection *_type.PendingConnection) {
 	}
 	lastRoom := m.CurrentRooms[len(m.CurrentRooms)-1]
 	lastRoom.AddPlayer(connection)
+}
+
+func (m *Matchmaker) RoomCopmlete(r *r.Room) {
+
+	m.launcher.LaunchGameServer(r)
+
+	m.removeClosedRoomLocked()
 }
