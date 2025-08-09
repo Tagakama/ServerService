@@ -21,3 +21,12 @@ type RoomSettings struct {
 	AppVersion string
 	MaxPlayers int
 }
+
+type Response struct {
+	ID         int    `json:"-"`
+	Status     string `json:"status"`
+	IP         string `json:"ip"`
+	Port       int    `json:"-"`
+	MapName    string `json:"map_name"`
+	AppVersion string `json:"-"`
+}

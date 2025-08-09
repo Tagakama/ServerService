@@ -1,6 +1,7 @@
 package matchmaker
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	server_launcher "github.com/Tagakama/ServerManager/internal/game-server/server-launcher"
@@ -121,5 +122,26 @@ func (m *Matchmaker) RoomCopmlete(r *r.Room) {
 
 	time.Sleep(500 * time.Millisecond)
 
+	m.SendResponse(r)
+
 	m.removeClosedRoomLocked()
+}
+
+func (m *Matchmaker) SendResponse(r *r.Room) {
+	unicName := fmt.Sprintf("%s%s%d", r.AppVersion, r.CurrentMap, r.ID)
+
+	newResponse := _type.Response{
+		Status:  "running",
+		IP:      unicName,
+		MapName: r.CurrentMap,
+	}
+
+	response, err := json.Marshal(newResponse)
+	if err != nil {
+		fmt.Errorf("Error marshalling response :%s", err)
+	}
+
+	for _, player := range r.Players {
+		fmt.Fprintf(player.Conn, string(response))
+	}
 }

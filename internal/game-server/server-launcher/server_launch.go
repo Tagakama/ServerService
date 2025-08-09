@@ -31,7 +31,7 @@ func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
 	unicName := fmt.Sprintf("%s%s%d", settings.AppVersion, settings.CurrentMap, settings.ID)
 	cmd := exec.Command(s.versionPath+settings.AppVersion+s.execName,
 		"-nographics", "-dedicatedServer", "-batchmode", "-fps", "60", "-dfill", "-UserID", unicName,
-		"-sessionName", string(settings.AppVersion+strconv.Itoa(settings.ID)), "-logFile", logFilePath,
+		"-sessionName", unicName, "-logFile", logFilePath,
 		"-port", strconv.Itoa(port), "-region eu",
 		"-serverName", unicName, "-scene", settings.CurrentMap)
 
