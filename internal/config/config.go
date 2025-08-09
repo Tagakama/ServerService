@@ -15,7 +15,7 @@ type Config struct {
 }
 
 type TCPServer struct {
-	Addres      string `yaml:"address" env-default:"0.0.0.0"`
+	Address     string `yaml:"address" env-default:"0.0.0.0"`
 	Port        string `yaml:"port" env-default:"8080"`
 	Timeout     int    `yaml:"timeout" env-default:"6"`
 	IdleTimeout int    `yaml:"idle_timeout" env-default:"60"`

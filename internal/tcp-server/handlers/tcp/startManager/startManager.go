@@ -7,7 +7,7 @@ import (
 )
 
 func CreateServerManager(config *config.Config) (net.Listener, error) {
-	server, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.Addres, config.Port))
+	server, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.Address, config.Port))
 	if err != nil {
 		fmt.Sprintf("Server not listen %v", err)
 	}

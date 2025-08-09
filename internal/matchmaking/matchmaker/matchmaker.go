@@ -7,6 +7,7 @@ import (
 	r "github.com/Tagakama/ServerManager/internal/matchmaking/room"
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"sync"
+	"time"
 )
 
 type RoomCloser interface {
@@ -117,6 +118,8 @@ func (m *Matchmaker) addAndAssign(connection *_type.PendingConnection) {
 func (m *Matchmaker) RoomCopmlete(r *r.Room) {
 
 	m.launcher.LaunchGameServer(r)
+
+	time.Sleep(500 * time.Millisecond)
 
 	m.removeClosedRoomLocked()
 }

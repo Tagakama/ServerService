@@ -19,14 +19,14 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 		fmt.Println("Error reading from connection: ", err)
 	}
 
-	var clientConnection = func() (_type.PendingConnection, error) {
+	var clientConnection = func() (*_type.PendingConnection, error) {
 		handleRawMessage := strings.SplitN(rawMessage, ":", -1)
 		newMessage := _type.Message{}
 		if len(handleRawMessage) != reflect.TypeOf(newMessage).NumField() {
 			fmt.Sprintf("Error message format :%s", rawMessage)
-			return _type.PendingConnection{Conn: conn}, fmt.Errorf("Format not allowed")
+			return &_type.PendingConnection{Conn: conn}, fmt.Errorf("Format not allowed")
 		}
-		return _type.PendingConnection{Conn: conn,
+		return &_type.PendingConnection{Conn: conn,
 			ConnectedMessage: _type.Message{ClientID: handleRawMessage[0],
 				Message: handleRawMessage[1],
 				NumberOfPlayers: func(s string) int {
