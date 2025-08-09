@@ -44,7 +44,7 @@ func NewWorkerPool(numWorkers int) *WorkerPool {
 	}
 
 	go pool.Proccess(numWorkers)
-
+	fmt.Printf("Worker pool created with %d workers.\n", numWorkers)
 	return pool
 }
 

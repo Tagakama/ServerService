@@ -11,6 +11,6 @@ func CreateServerManager(config *config.Config) (net.Listener, error) {
 	if err != nil {
 		fmt.Sprintf("Server not listen %v", err)
 	}
-
+	fmt.Println("Server is listening on " + config.Port)
 	return server, err
 }
