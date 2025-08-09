@@ -19,16 +19,16 @@ type RoomCloser interface {
 type Matchmaker struct {
 	CurrentRooms []*r.Room
 	mu           sync.Mutex
-	launcher     *server_launcher.ServerLauncher
+	Launcher     server_launcher.IServerLauncher
 }
 
 var roomsCount = 1
 
-func NewMatchmaker(launcher *server_launcher.ServerLauncher) *Matchmaker {
+func NewMatchmaker(launcher server_launcher.IServerLauncher) *Matchmaker {
 	return &Matchmaker{
 		CurrentRooms: make([]*r.Room, 0),
 		mu:           sync.Mutex{},
-		launcher:     launcher,
+		Launcher:     launcher,
 	}
 }
 
@@ -118,7 +118,7 @@ func (m *Matchmaker) addAndAssign(connection *_type.PendingConnection) {
 
 func (m *Matchmaker) RoomCopmlete(r *r.Room) {
 
-	m.launcher.LaunchGameServer(r)
+	m.Launcher.LaunchGameServer(r)
 
 	time.Sleep(500 * time.Millisecond)
 
@@ -142,6 +142,6 @@ func (m *Matchmaker) SendResponse(r *r.Room) {
 	}
 
 	for _, player := range r.Players {
-		fmt.Fprintf(player.Conn, string(response))
+		fmt.Fprintf(player.Conn, "%v", response)
 	}
 }

@@ -9,6 +9,10 @@ import (
 	"strconv"
 )
 
+type IServerLauncher interface {
+	LaunchGameServer(settings *room.Room)
+}
+
 type ServerLauncher struct {
 	versionPath string
 	execName    string
