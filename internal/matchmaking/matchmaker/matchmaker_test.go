@@ -27,7 +27,7 @@ func mockConnection(clientID string, mapName string, players int) *_type.Pending
 
 func TestMatchmaker_AddNewRoom(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	m := matchmaker.NewMatchmaker(mockLauncher)
+	m := matchmaker.New(mockLauncher)
 	err := m.AddNewRoom(mockConnection("client1", "map1", 1))
 	if err != nil {
 		t.Fatalf("failed to add room: %v", err)
@@ -39,7 +39,7 @@ func TestMatchmaker_AddNewRoom(t *testing.T) {
 
 func TestMatchmaker_InviteInRoom(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	m := matchmaker.NewMatchmaker(mockLauncher)
+	m := matchmaker.New(mockLauncher)
 
 	// Добавляем комнату
 	err := m.AddNewRoom(mockConnection("owner", "map1", 1))
@@ -64,7 +64,7 @@ func TestMatchmaker_InviteInRoom(t *testing.T) {
 
 func TestMatchmaker_RemoveClosedRoom_RemovesMultipleClosedRooms(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	mm := matchmaker.NewMatchmaker(mockLauncher)
+	mm := matchmaker.New(mockLauncher)
 
 	// Комнаты: закрытая, открытая, закрытая
 	r1, _ := room.New(_type.RoomSettings{ID: 1, MaxPlayers: 8, CurrentMap: "Map1", AppVersion: "v1"})
@@ -89,7 +89,7 @@ func TestMatchmaker_RemoveClosedRoom_RemovesMultipleClosedRooms(t *testing.T) {
 
 func TestMatchmaker_StressTest_1000Connections(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	mm := matchmaker.NewMatchmaker(mockLauncher)
+	mm := matchmaker.New(mockLauncher)
 
 	var wg sync.WaitGroup
 	num := 1000
@@ -119,7 +119,7 @@ func TestMatchmaker_StressTest_1000Connections(t *testing.T) {
 
 func TestMatchmaker_1000Connections_Distribution(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	mm := matchmaker.NewMatchmaker(mockLauncher)
+	mm := matchmaker.New(mockLauncher)
 	const totalConnections = 1000
 	const playersPerConnection = 1
 	const maxPlayersPerRoom = 8
@@ -179,7 +179,7 @@ func TestMatchmaker_1000Connections_Distribution(t *testing.T) {
 
 func TestMatchmaker_RemoveClosedRoom(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	m := matchmaker.NewMatchmaker(mockLauncher)
+	m := matchmaker.New(mockLauncher)
 
 	// Добавляем комнату
 	_ = m.AddNewRoom(mockConnection("client", "map1", 1))
@@ -194,7 +194,7 @@ func TestMatchmaker_RemoveClosedRoom(t *testing.T) {
 
 func TestMatchmaker_RoomTimeoutClosure(t *testing.T) {
 	mockLauncher := &MockServerLauncher{}
-	mm := matchmaker.NewMatchmaker(mockLauncher)
+	mm := matchmaker.New(mockLauncher)
 
 	// Переопределим таймаут через OnComplete
 	done := make(chan struct{}, 1)

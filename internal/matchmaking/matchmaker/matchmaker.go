@@ -19,12 +19,12 @@ type RoomCloser interface {
 type Matchmaker struct {
 	CurrentRooms []*r.Room
 	mu           sync.Mutex
-	Launcher     server_launcher.IServerLauncher
+	Launcher     server_launcher.Launcher
 }
 
 var roomsCount = 1
 
-func NewMatchmaker(launcher server_launcher.IServerLauncher) *Matchmaker {
+func New(launcher server_launcher.Launcher) *Matchmaker {
 	return &Matchmaker{
 		CurrentRooms: make([]*r.Room, 0),
 		mu:           sync.Mutex{},

@@ -55,7 +55,7 @@ func TestRoom_ClosesAfterTimeout(t *testing.T) {
 }
 
 func TestRoom_RemovedAfterTimeout(t *testing.T) {
-	mm := matchmaker.NewMatchmaker()
+	mm := matchmaker.New()
 	done := make(chan struct{}, 1)
 
 	conn := &_type.PendingConnection{

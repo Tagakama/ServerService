@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-type IServerLauncher interface {
+type Launcher interface {
 	LaunchGameServer(settings *room.Room)
 }
 
@@ -26,9 +26,9 @@ func New(cfg *config.Config) *ServerLauncher {
 }
 
 func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
-	port, err := FindFreePort()
+	port, tcpListener, err := FindFreePort()
 	if err != nil {
-		fmt.Sprintf("Failed to find free port: %v", err)
+		panic(err)
 	}
 
 	logFilePath := fmt.Sprintf("Logs/Room_%d.log", settings.ID)
@@ -38,6 +38,8 @@ func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
 		"-sessionName", unicName, "-logFile", logFilePath,
 		"-port", strconv.Itoa(port), "-region eu",
 		"-serverName", unicName, "-scene", settings.CurrentMap)
+
+	tcpListener.Close()
 
 	err = cmd.Start()
 	if err != nil {
@@ -53,15 +55,14 @@ func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
 	}()
 }
 
-func FindFreePort() (int, error) {
+func FindFreePort() (int, *net.TCPListener, error) {
 	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	listener, err := net.ListenTCP("tcp", addr)
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
-	defer listener.Close()
-	return listener.Addr().(*net.TCPAddr).Port, nil
+	return listener.Addr().(*net.TCPAddr).Port, listener, nil
 }
