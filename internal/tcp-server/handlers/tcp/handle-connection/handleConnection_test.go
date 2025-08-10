@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handleConnection"
+	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handle-connection"
 	"github.com/Tagakama/ServerManager/internal/tcp-server/type"
 )
 

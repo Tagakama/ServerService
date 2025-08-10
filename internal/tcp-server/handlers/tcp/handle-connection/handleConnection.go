@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
@@ -47,6 +48,13 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 		fmt.Println("Error creating pending connection: ", err)
 		return
 	}
+
+	fmt.Printf("New request - Time: %s, Client: %s, Map: %s, Player count: %d\n",
+		time.Now().Format("02-01-2006 15:04:05"),
+		pendingConnection.ConnectedMessage.ClientID,
+		pendingConnection.ConnectedMessage.MapName,
+		pendingConnection.ConnectedMessage.NumberOfPlayers)
+
 	pool.AddTask(pendingConnection)
 
 }

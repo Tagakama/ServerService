@@ -5,26 +5,27 @@ import (
 	"github.com/Tagakama/ServerManager/internal/config"
 	server_launcher "github.com/Tagakama/ServerManager/internal/game-server/server-launcher"
 	"github.com/Tagakama/ServerManager/internal/matchmaking/matchmaker"
-	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handleConnection"
-	"github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/startManager"
+	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handle-connection"
+	"github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/start-manager"
 	"github.com/Tagakama/ServerManager/internal/tcp-server/workers"
 )
 
 func main() {
 	cfg := config.MustLoad()
-	sl := server_launcher.New(cfg)
-	mm := matchmaker.NewMatchmaker(sl)
+	serverLauncher := server_launcher.New(cfg)
+	newMatchmaker := matchmaker.New(serverLauncher)
 
-	workerPool := workers.NewWorkerPool(cfg.WorkerCount, mm)
+	workerPool := workers.NewWorkerPool(cfg.WorkerCount, newMatchmaker)
 
-	serverManagerListener, err := startManager.CreateServerManager(cfg)
+	serverManager, err := startManager.New(cfg)
 	if err != nil {
-		fmt.Printf("Error creating server manager: %v", err)
+		panic(err)
 	}
-	defer serverManagerListener.Close()
+
+	defer serverManager.Close()
 
 	for {
-		conn, err := serverManagerListener.Accept()
+		conn, err := serverManager.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection:", err)
 			continue

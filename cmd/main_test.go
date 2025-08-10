@@ -3,7 +3,7 @@ package main_test
 import (
 	"context"
 	"fmt"
-	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handleConnection"
+	handlers "github.com/Tagakama/ServerManager/internal/tcp-server/handlers/tcp/handle-connection"
 	"net"
 	"os"
 	"testing"
@@ -35,7 +35,7 @@ func TestFullCycle(t *testing.T) {
 
 	// 2. Инициализация компонентов
 	sl := server_launcher.New(cfg)
-	mm := matchmaker.NewMatchmaker(sl)
+	mm := matchmaker.New(sl)
 	wp := workers.NewWorkerPool(cfg.WorkerCount, mm)
 
 	// 3. Запуск сервера с таймаутом

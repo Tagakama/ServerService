@@ -26,7 +26,6 @@ func MustLoad() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
 
 	if configPath == "" {
-		// Если не задан, ищем config.yaml в рабочей директории
 		wd, err := os.Getwd()
 		if err != nil {
 			log.Fatalf("cannot get working directory: %v", err)

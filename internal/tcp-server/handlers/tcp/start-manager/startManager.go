@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func CreateServerManager(config *config.Config) (net.Listener, error) {
+func New(config *config.Config) (net.Listener, error) {
 	server, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.Address, config.Port))
 	if err != nil {
 		fmt.Sprintf("Server not listen %v", err)
