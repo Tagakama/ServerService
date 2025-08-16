@@ -6,7 +6,6 @@ import (
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"github.com/Tagakama/ServerManager/internal/tcp-server/workers"
 	"net"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -16,17 +15,18 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 
 	reader := bufio.NewReader(conn)
 	rawMessage, err := reader.ReadString('\n')
+	rawMessage = strings.TrimSpace(rawMessage)
 	if err != nil {
 		fmt.Println("Error reading from connection: ", err)
 	}
 
 	var clientConnection = func() (*_type.PendingConnection, error) {
 		handleRawMessage := strings.SplitN(rawMessage, ":", -1)
-		newMessage := _type.Message{}
-		if len(handleRawMessage) != reflect.TypeOf(newMessage).NumField() {
-			fmt.Sprintf("Error message format :%s", rawMessage)
-			return &_type.PendingConnection{Conn: conn}, fmt.Errorf("Format not allowed")
-		}
+		//newMessage := _type.Message{}
+		//if len(handleRawMessage) != reflect.TypeOf(newMessage).NumField() {
+		//	fmt.Sprintf("Error message format :%s", rawMessage)
+		//	return &_type.PendingConnection{Conn: conn}, fmt.Errorf("Format not allowed")
+		//}
 		return &_type.PendingConnection{Conn: conn,
 			ConnectedMessage: _type.Message{ClientID: handleRawMessage[0],
 				Message: handleRawMessage[1],
@@ -36,6 +36,11 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 						fmt.Println("Error converting NumberOfPlayers to int: ", err)
 						return 0
 					}
+
+					if i <= 0 {
+						return 1
+					}
+
 					return i
 				}(handleRawMessage[2]),
 				MapName:    handleRawMessage[3],

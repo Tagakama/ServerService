@@ -7,6 +7,7 @@ import (
 	server_launcher "github.com/Tagakama/ServerManager/internal/game-server/server-launcher"
 	r "github.com/Tagakama/ServerManager/internal/matchmaking/room"
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
+	"log"
 	"sync"
 	"time"
 )
@@ -121,6 +122,7 @@ func (m *Matchmaker) RoomCopmlete(r *r.Room) {
 	m.Launcher.LaunchGameServer(r)
 
 	time.Sleep(500 * time.Millisecond)
+	fmt.Printf("Room %d has closed , sending response!\n", r.ID)
 
 	m.SendResponse(r)
 
@@ -140,8 +142,12 @@ func (m *Matchmaker) SendResponse(r *r.Room) {
 	if err != nil {
 		fmt.Errorf("Error marshalling response :%s", err)
 	}
-
+	fmt.Printf("New marshall response: %s.\n", string(response))
 	for _, player := range r.Players {
-		fmt.Fprintf(player.Conn, "%v", response)
+		_, err = fmt.Fprintf(player.Conn, "%s", string(response))
+		if err != nil {
+			log.Printf("Failed to send response to player: %v", err)
+		}
+		player.Conn.Close()
 	}
 }
