@@ -16,6 +16,7 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 
 	reader := bufio.NewReader(conn)
 	rawMessage, err := reader.ReadString('\n')
+	rawMessage = strings.TrimSpace(rawMessage)
 	if err != nil {
 		fmt.Println("Error reading from connection: ", err)
 	}
@@ -36,6 +37,11 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 						fmt.Println("Error converting NumberOfPlayers to int: ", err)
 						return 0
 					}
+
+					if i <= 0 {
+						return 1
+					}
+
 					return i
 				}(handleRawMessage[2]),
 				MapName:    handleRawMessage[3],
@@ -45,7 +51,7 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 
 	pendingConnection, err := clientConnection()
 	if err != nil {
-		fmt.Println("Error creating pending connection: ", err)
+		fmt.Println("Error creating pending connection.", err)
 		return
 	}
 

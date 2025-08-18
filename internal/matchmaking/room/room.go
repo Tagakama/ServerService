@@ -54,7 +54,7 @@ func New(settings _type.RoomSettings) (*Room, error) {
 			go r.OnComplete(r)
 		}
 	}(room)
-
+	fmt.Printf("New Room ID: %d\n", room.ID)
 	return room, nil
 }
 
@@ -68,7 +68,7 @@ func (room *Room) AddPlayer(player *_type.PendingConnection) {
 
 	room.Players = append(room.Players, player)
 	room.ReservedPlayers += player.ConnectedMessage.NumberOfPlayers
-
+	fmt.Printf("Player %s, connected to room %d\n", player.ConnectedMessage.ClientID, room.ID)
 	if room.ReservedPlayers == room.MaxPlayers {
 		room.Closed = true
 	}

@@ -43,7 +43,7 @@ func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
 
 	err = cmd.Start()
 	if err != nil {
-		fmt.Sprintf("Failed to start server %d: %v\n", settings.ID, err)
+		fmt.Printf("Failed to start server %d: %v\n", settings.ID, err)
 		return
 	}
 
@@ -53,6 +53,8 @@ func (s *ServerLauncher) LaunchGameServer(settings *room.Room) {
 			fmt.Printf("Server %d stopped with error: %v\n", settings.ID, err)
 		}
 	}()
+
+	fmt.Printf("Server %s started.\n", unicName)
 }
 
 func FindFreePort() (int, *net.TCPListener, error) {
