@@ -6,6 +6,7 @@ import (
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"github.com/Tagakama/ServerManager/internal/tcp-server/workers"
 	"net"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -22,11 +23,11 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 
 	var clientConnection = func() (*_type.PendingConnection, error) {
 		handleRawMessage := strings.SplitN(rawMessage, ":", -1)
-		//newMessage := _type.Message{}
-		//if len(handleRawMessage) != reflect.TypeOf(newMessage).NumField() {
-		//	fmt.Sprintf("Error message format :%s", rawMessage)
-		//	return &_type.PendingConnection{Conn: conn}, fmt.Errorf("Format not allowed")
-		//}
+		newMessage := _type.Message{}
+		if len(handleRawMessage) != reflect.TypeOf(newMessage).NumField() {
+			fmt.Sprintf("Error message format :%s", rawMessage)
+			return &_type.PendingConnection{Conn: conn}, fmt.Errorf("Format not allowed")
+		}
 		return &_type.PendingConnection{Conn: conn,
 			ConnectedMessage: _type.Message{ClientID: handleRawMessage[0],
 				Message: handleRawMessage[1],
@@ -50,7 +51,7 @@ func HandleConnection(conn net.Conn, pool workers.TaskSubmitter) {
 
 	pendingConnection, err := clientConnection()
 	if err != nil {
-		fmt.Println("Error creating pending connection: ", err)
+		fmt.Println("Error creating pending connection.", err)
 		return
 	}
 
