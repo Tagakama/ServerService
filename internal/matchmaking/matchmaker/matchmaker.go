@@ -9,7 +9,6 @@ import (
 	_type "github.com/Tagakama/ServerManager/internal/tcp-server/type"
 	"log"
 	"sync"
-	"time"
 )
 
 type RoomCloser interface {
@@ -45,6 +44,12 @@ func (m *Matchmaker) AddNewRoom(connection *_type.PendingConnection) error {
 		return errors.New(fmt.Sprintf("Error creating new room :%s", err))
 	}
 
+	serverStart := m.Launcher.LaunchGameServer(newRoom)
+
+	if !serverStart {
+		fmt.Printf("The server did not start!\n")
+	}
+
 	newRoom.OnComplete = func(r *r.Room) {
 		m.RoomCopmlete(r)
 	}
@@ -53,6 +58,7 @@ func (m *Matchmaker) AddNewRoom(connection *_type.PendingConnection) error {
 	m.CurrentRooms = append(m.CurrentRooms, newRoom)
 	roomsCount++
 	//m.mu.Unlock()
+
 	return nil
 }
 
@@ -119,9 +125,12 @@ func (m *Matchmaker) addAndAssign(connection *_type.PendingConnection) {
 
 func (m *Matchmaker) RoomCopmlete(r *r.Room) {
 
-	m.Launcher.LaunchGameServer(r)
+	//serverStart := m.Launcher.LaunchGameServer(r)
+	//
+	//if !serverStart {
+	//	fmt.Printf("The server did not start!\n")
+	//} ПЕРЕНЕСЕНО в AddNEwRoom
 
-	time.Sleep(500 * time.Millisecond)
 	fmt.Printf("Room %d has closed , sending response!\n", r.ID)
 
 	m.SendResponse(r)
